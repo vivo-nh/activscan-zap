@@ -6,8 +6,10 @@ WORKDIR /zap-service
 COPY start.sh /zap-service/start.sh
 RUN sed -i 's/\r$//' /zap-service/start.sh && chmod +x /zap-service/start.sh
 
-# Render routes to $PORT; EXPOSE is informational, so set it to 10000 as a neutral default
-# (the actual listening port is still controlled by $PORT at runtime).
-EXPOSE 10000
+# IMPORTANT:
+# The base image defines an ENTRYPOINT that can bypass/override CMD.
+# Force our script to be the entrypoint so we control the port binding.
+ENTRYPOINT ["/zap-service/start.sh"]
 
-CMD ["/zap-service/start.sh"]
+# EXPOSE is informational; Render uses $PORT at runtime.
+EXPOSE 10000
